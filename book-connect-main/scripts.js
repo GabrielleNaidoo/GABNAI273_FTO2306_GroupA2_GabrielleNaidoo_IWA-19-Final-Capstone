@@ -6,16 +6,6 @@ let page = 1;
 // if (!books && !Array.isArray(books)) throw new Error('Source required')
 // if (!range && range.length < 2) throw new Error('Range must be an array with two numbers')
 
-const day = {
-  dark: "10, 10, 20",
-  light: "255, 255, 255",
-};
-
-const night = {
-  dark: "255, 255, 255",
-  light: "10, 10, 20",
-};
-
 let fragment = document.createDocumentFragment();
 const extracted = books.slice(0, BOOKS_PER_PAGE + 1);
 
@@ -24,73 +14,106 @@ const listItemFragment = document.createDocumentFragment();
 const listItemContainer = document.querySelector("[data-list-items]");
 
 for (let i = 0; i < books.length; i++) {
-  const { title, image, author } = books[i];
+  const { title, image, author, id } = books[i];
 
-  // const listItemTitle = document.createElement("div");
-  // listItemTitle.textContent = title;
-  // const listItemImage = document.createElement("img");
-  // listItemImage.src = image;
-  // const listItemAuthor = document.createElement("h3");
-  // listItemAuthor.textContent = authors[author];
+  //List items:
+  const element = document.createElement("div");
+  element.classList.add("preview");
+  element.setAttribute("data-preview", id);
 
-  // listItemFragment.appendChild(listItemTitle);
-  // listItemFragment.appendChild(listItemImage);
-  // listItemFragment.appendChild(listItemAuthor);
-  const itemElement = document.createElement("div");
-  itemElement.innerHTML = /*html*/ `
-  <div>${title}</div>
-  <div>${authors[author]}</div>
-  <img alt="Book cover image" src=${image}>`;
+  element.innerHTML = /* html */ `
+            <img
+                class="preview__image"
+                src="${image}"
+            />
+            
+            <div class="preview__info">
+                <h3 class="preview__title">${title}</h3>
+                <div class="preview__author">${authors[author]}</div>
+            </div>
+        `;
 
-  listItemFragment.appendChild(itemElement);
+  listItemFragment.appendChild(element);
 }
 listItemContainer.appendChild(listItemFragment);
 
 /********************PREVIEW OVERLAYS******************** */
+
+// const previewFragment = document.createDocumentFragment();
+
+// for (let i = 0; i < books.length; i++) {
+//   //overlays for list items:
+//   const { title, image, author, id } = books[i];
+
+//
+//   }
+//   const previewImagesElement = document.createElement("div");
+//   previewImagesElement.classList.add("overlay__preview");
+//   previewImagesElement.innerHTML = /*html*/ `
+//   <img class="overlay__blur" data-list-blur src="${image}"/>
+//       <img class="overlay__image" data-list-image src="${image}"/>`;
+
+//   const previewContentElement = document.createElement("div");
+//   previewContentElement.classList.add("overlay__content");
+//   previewContentElement.innerHTML = /*html */ `<h3 class="overlay__title" data-list-title>${title}</h3>
+//   <div class="overlay__data" data-list-subtitle>${authors[author]}</div>
+//   <p class="overlay__data overlay__data_secondary" data-list-description>${descriptionFromId}</p>`;
+
+//   const previewCloseElement = document.createElement("div");
+//   previewCloseElement.classList.add("overlay__row");
+//   previewCloseElement.innerHTML = /*html*/ `
+//   <button class="overlay__button overlay__button_primary" data-list-close>Close</button>
+//   `;
+
+//   previewFragment.appendChild(previewImagesElement);
+
+//   previewFragment.appendChild(previewContentElement);
+//   previewFragment.appendChild(previewCloseElement);
+// }
+// overlayContainer.appendChild(previewFragment);
+
+/********************CLICK EVENT ON LIST ITEMS************* */
 const overlayContainer = document.querySelector("[data-list-active]");
+const overlayBlur = overlayContainer.querySelector("[data-list-blur]");
+const overlayImage = overlayContainer.querySelector("[data-list-image]");
+const overlayTitle = overlayContainer.querySelector("[data-list-title]");
+const overlaySubtitle = overlayContainer.querySelector("[data-list-subtitle]");
+const overlayDescription = overlayContainer.querySelector(
+  "[data-list-description]"
+);
+const overlayClose = overlayContainer.querySelector("[data-list-close]");
 
-const createPreview = (author, id, image, title) => {
-  let descriptionFromId = "";
+listItemContainer.addEventListener("click", (event) => {
+  const target = event.target;
+  if (target.classList.contains("preview")) {
+    for (let i = 0; i < books.length; i++) {
+      const { title, image, author, id } = books[i];
+      if (id === target.dataset.preview) {
+        overlayContainer.style.display = "block";
 
-  for (let i = 0; i < books.length; i++) {
-    if (id === books[i].id) {
-      descriptionFromId = books[i].description;
-      break;
+        overlayBlur.src = image;
+        overlayImage.src = image;
+        overlayTitle.textContent = title;
+        overlaySubtitle.textContent = authors[author];
+
+        let descriptionFromId = "";
+
+        for (let j = 0; j < books.length; j++) {
+          if (target.dataset.preview === books[j].id) {
+            descriptionFromId = books[j].description;
+            break;
+          }
+        }
+        overlayDescription.textContent = descriptionFromId;
+      }
     }
   }
+});
 
-  overlayContainer.querySelector("[data-list-blur]").src = image;
-  overlayContainer.querySelector("[data-list-image]").src = image;
-  overlayContainer.querySelector("[data-list-title]").textContent = title;
-  overlayContainer.querySelector("[data-list-subtitle]").textContent =
-    authors[author];
-  overlayContainer.querySelector("[data-list-description]").textContent =
-    descriptionFromId;
-
-  //   const element = document.createElement("dialogue");
-  //   // element.classList.add = ("data-list-active");
-  //   element.setAttribute("data-list-active", id);
-  //   element.innerHTML = /*html*/ `<div class="overlay__preview">
-  //         <img class="overlay__blur" data-list-blur src="${image}"/>
-  //         <img class="overlay__image" data-list-image src="${image}"/></div>
-  //       <div class="overlay__content">
-  //         <h3 class="overlay__title" data-list-title>${title}</h3>
-  //         <div class="overlay__data" data-list-subtitle>${authors[author]}</div>
-  //         <p class="overlay__data overlay__data_secondary" data-list-description>${descriptionFromId}</p></div>
-  //         <div class="overlay__row">
-  //         <button class="overlay__button overlay__button_primary" data-list-close>Close</button>
-  //       </div>
-  // `;
-
-  // fragment.appendChild(element);
-};
-
-for (let i = 0; i < books.length; i++) {
-  const { author, id, image, title } = books[i];
-  const preview = createPreview(author, id, image, title);
-}
-
-// overlayContainer.appendChild(fragment);
+overlayClose.addEventListener(
+  "click",
+  (event) => (overlayContainer.style.display = "none")
+);
 
 /*******************SEARCH FORM DROPDOWNS************** */
 
@@ -155,7 +178,6 @@ dataListButton.textContent = `Show more ${books.length - BOOKS_PER_PAGE}`;
 //   '<span class="list__remaining"> (${matches.length - [page * BOOKS_PER_PAGE] > 0 ? matches.length - [page * BOOKS_PER_PAGE] : 0})</span>',
 // ];
 
-// data-settings-cancel.click() { querySelect(data-settings-overlay).open === false }
 // data-settings-form.submit() { actions.settings.submit }
 // data-list-close.click() { data-list-active.open === false }
 
@@ -294,24 +316,26 @@ closeSettings.addEventListener(
   (event) => (settingsOverlay.style.display = "none")
 );
 
+const day = {
+  dark: "10, 10, 20",
+  light: "255, 255, 255",
+};
+
+const night = {
+  dark: "255, 255, 255",
+  light: "10, 10, 20",
+};
+
 settingsSave.addEventListener("click", (event) => {
   event.preventDefault();
 
   const settingsValue = document.querySelector("[data-settings-theme]").value;
 
   //Does the users inputted value match the user's preference of preferring dark?
-  settingsValue === window.matchMedia &&
-  window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? "night"
-    : "day";
-
-  //   if (
-  //     settingsValue === "dark" &&
-  //     window.matchMedia &&
-  //     window.matchMedia("(prefers-color-scheme: dark)").matches
-  //   ) {
-  //     document.documentElement.style.setProperty("background-color", night.dark);
-  //   }
+  // settingsValue === window.matchMedia &&
+  // window.matchMedia("(prefers-color-scheme: dark)").matches
+  //   ? "night"
+  //   : "day";
 });
 
 // data-settings-theme.value === window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'day'

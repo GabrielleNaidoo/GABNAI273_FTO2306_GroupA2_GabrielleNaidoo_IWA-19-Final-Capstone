@@ -224,6 +224,7 @@ option {
   }
 }
 
+/* Also for smaller items  */
 .preview_hidden {
   display: none;
 }
