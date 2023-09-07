@@ -1,6 +1,6 @@
 import { BOOKS_PER_PAGE, authors, genres, books } from "./data.js";
 
-const matches = books;
+const matches = [];
 let page = 1;
 
 // if (!books && !Array.isArray(books)) throw new Error('Source required')
@@ -18,6 +18,33 @@ const night = {
 
 let fragment = document.createDocumentFragment();
 const extracted = books.slice(0, BOOKS_PER_PAGE + 1);
+
+/************SHOW ALL BOOKS*********** */
+const listItemFragment = document.createDocumentFragment();
+const listItemContainer = document.querySelector("[data-list-items]");
+
+for (let i = 0; i < books.length; i++) {
+  const { title, image, author } = books[i];
+
+  // const listItemTitle = document.createElement("div");
+  // listItemTitle.textContent = title;
+  // const listItemImage = document.createElement("img");
+  // listItemImage.src = image;
+  // const listItemAuthor = document.createElement("h3");
+  // listItemAuthor.textContent = authors[author];
+
+  // listItemFragment.appendChild(listItemTitle);
+  // listItemFragment.appendChild(listItemImage);
+  // listItemFragment.appendChild(listItemAuthor);
+  const itemElement = document.createElement("div");
+  itemElement.innerHTML = /*html*/ `
+  <div>${title}</div>
+  <div>${authors[author]}</div>
+  <img alt="Book cover image" src=${image}>`;
+
+  listItemFragment.appendChild(itemElement);
+}
+listItemContainer.appendChild(listItemFragment);
 
 /********************PREVIEW OVERLAYS******************** */
 const overlayContainer = document.querySelector("[data-list-active]");
@@ -65,25 +92,6 @@ for (let i = 0; i < books.length; i++) {
 
 // overlayContainer.appendChild(fragment);
 
-/********************************************************/
-//LOGIC FOR WHEN THE OVERLAY IS ACTIVATED FOR THE PREVIEWS:
-
-/******************LIST ITEMS**************** */
-
-//-Loop over books array to create the list items that show up for each book.
-//-must contain image
-//-must contain title of book
-//-must contain author
-//-try using the appendChild method on a fragment
-
-// for (let i = 0; i < books.length; i++) {
-//   const { author, id, image, title } = books[i];
-
-//   const fragment = document.fragment;
-
-//   listElement = document.createElement("div");
-// }
-
 /*******************SEARCH FORM DROPDOWNS************** */
 
 //Genres:
@@ -127,7 +135,18 @@ for (const id of Object.keys(authors)) {
 
 searchAuthors.appendChild(authorsFragment);
 
-// data-list-button = "Show more (books.length - BOOKS_PER_PAGE)"
+/********************************* /******************LIST ITEMS**************** */
+
+//-Loop over books array to create the list items that show up for each book.
+//-must contain image
+//-must contain title of book
+//-must contain author
+//-try using the appendChild method on a fragment*/
+
+/****************************** */
+
+const dataListButton = document.querySelector("[data-list-button]");
+dataListButton.textContent = `Show more ${books.length - BOOKS_PER_PAGE}`;
 
 // data-list-button.disabled = !(matches.length - [page * BOOKS_PER_PAGE] > 0)
 
@@ -144,11 +163,6 @@ searchAuthors.appendChild(authorsFragment);
 //     document.querySelector([data-list-items]).appendChild(createPreviewsFragment(matches, page x BOOKS_PER_PAGE, {page + 1} x BOOKS_PER_PAGE]))
 //     actions.list.updateRemaining()
 //     page = page + 1
-// }
-
-// data-header-search.click() {
-//     data-search-overlay.open === true ;
-//     data-search-title.focus();
 // }
 
 // data-search-form.click(filters) {
@@ -252,10 +266,10 @@ const searchButton = document.querySelector("[data-header-search]");
 const searchOverlay = document.querySelector(["[data-search-overlay]"]);
 const closeSearch = document.querySelector("[data-search-cancel]");
 
-searchButton.addEventListener(
-  "click",
-  (event) => (searchOverlay.style.display = "block")
-);
+searchButton.addEventListener("click", (event) => {
+  searchOverlay.style.display = "block";
+  searchOverlay.querySelector("[data-search-title]").focus();
+});
 
 closeSearch.addEventListener(
   "click",
