@@ -8,12 +8,11 @@ const listItemContainer = document.querySelector("[data-list-items]");
 const dataListButton = document.querySelector("[data-list-button]");
 let currentIndex = 0;
 //BOOKS_PER_PAGE=36;//batch size
-const endIndex = currentIndex + BOOKS_PER_PAGE;
-const booksToShow = books.slice(currentIndex, endIndex);
-
 const displayBooks = () => {
+  let endIndex = currentIndex + BOOKS_PER_PAGE;
+  let booksToShow = books.slice(currentIndex, endIndex);
   for (let i = 0; i < booksToShow.length; i++) {
-    const { title, image, author, id } = books[i];
+    const { title, image, author, id } = booksToShow[i];
     const element = document.createElement("div");
     element.classList.add("preview");
     element.setAttribute("data-preview", id);
@@ -144,31 +143,111 @@ const searchButton = document.querySelector("[data-header-search]");
 const searchOverlay = document.querySelector(["[data-search-overlay]"]);
 const closeSearch = document.querySelector("[data-search-cancel]");
 const searchSubmit = searchOverlay.querySelector(".overlay__button_primary");
+const searchListMessage = document.querySelector("[data-list-message]");
 
 searchButton.addEventListener("click", (event) => {
   searchOverlay.style.display = "block";
   searchOverlay.querySelector("[data-search-title]").focus();
 });
 
-// closeSearch.addEventListener(
-//   "click",
-//   (event) => ()
-// );
+closeSearch.addEventListener(
+  "click",
+  (event) => (searchOverlay.style.display = "none")
+);
 
 //Search submit --filters
 const formElement = document.querySelector("[data-search-form]");
-const titleInput = document.querySelector("[data-search-title]");
-const genreInput = document.querySelector("[data-search-genres]");
-const authorInput = document.querySelector("[data-search-authors]");
 
 searchSubmit.addEventListener("click", (event) => {
   event.preventDefault();
-  const formData = new FormData(formElement);
-  const filters = Object.fromEntries(formData);
-  const result = [];
-  let titleMatch = "";
-  let authorMatch = "";
-  let genreMatch = "";
+  const titleInput = document
+    .querySelector("[data-search-title]")
+    .value.trim()
+    .toLowerCase();
+  const genreInput = document.querySelector("[data-search-genres]").value;
+  const authorInput = document.querySelector("[data-search-authors]").value;
+  // listItemContainer.innerHTML = "";
+  let result = [];
+
+  for (let i = 0; i < books.length; i++) {
+    const { author, title } = books[i];
+    const authorName = authors[author];
+    let genreMatch = false;
+    for (let j = 0; j < books[i].genres.length; j++) {
+      const genreID = books[i].genres[j];
+      const genreName = genres[genreID];
+
+      if (genreName && genreName === genreInput) {
+        genreMatch = true;
+        break;
+      }
+    }
+    if (
+      (title.toLowerCase().includes(titleInput) || titleInput === "") &&
+      (authorInput === authorName || authorInput === "any") &&
+      (genreMatch || genreInput === "any")
+    ) {
+      if (!result.includes(books[i])) {
+        result.push(books[i]);
+      }
+    }
+  }
+  console.log(result);
+
+  searchOverlay.style.display = "none";
+
+  if (result.length === 0) {
+    listItemContainer.innerHTML = "";
+    searchListMessage.style.display = "block";
+    dataListButton.style.display = "none";
+  }
+  if (result.length > 0 && result.length !== books.length) {
+    searchListMessage.style.display = "none"; //Gets rid of message form narrow search
+    const resultItemFragment = document.createDocumentFragment(); //create fragment to append the result items from result array
+    listItemContainer.innerHTML = "";
+    let currentIndex = 0;
+
+    const displayBookResult = () => {
+      let endIndex = currentIndex + BOOKS_PER_PAGE;
+      let resultsToShow = result.slice(currentIndex, endIndex);
+      for (let i = 0; i < resultsToShow.length; i++) {
+        const { title, image, author, id } = resultsToShow[i];
+        const resultElement = document.createElement("div");
+        resultElement.classList.add("preview");
+        resultElement.setAttribute("data-preview", id);
+
+        resultElement.innerHTML = /* html */ `
+              <img
+                  class="preview__image"
+                  src="${image}"
+              />
+  
+              <div class="preview__info">
+                  <h3 class="preview__title">${title}</h3>
+                  <div class="preview__author">${authors[author]}</div>
+              </div>
+          `;
+
+        resultItemFragment.appendChild(resultElement);
+      }
+      listItemContainer.appendChild(resultItemFragment);
+
+      currentIndex = endIndex;
+
+      if (currentIndex >= resultsToShow.length) {
+        dataListButton.disabled = true;
+      } else {
+        const resultsLeft = resultsToShow.length - currentIndex;
+        dataListButton.textContent = `Show more ${resultsLeft}`;
+      }
+    };
+    displayBookResult();
+    dataListButton.removeEventListener("click", displayBooks);
+    dataListButton.addEventListener("click", displayBookResult);
+  }
+  if (result.length === books.length) {
+    dataListButton.disabled = false;
+  }
 });
 
 //SETTINGS OVERLAY
