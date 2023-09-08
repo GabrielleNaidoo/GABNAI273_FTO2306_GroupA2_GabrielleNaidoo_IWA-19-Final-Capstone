@@ -163,6 +163,13 @@ export const genres = {
   "64c4197d-5f8e-4bff-b440-6d19bc591fd9": "Magic",
 };
 
+/**
+ * Contains objects with all relevant
+ *
+ * @param {number} num1 - The first number.
+ * @param {number} num2 - The second number.
+ * @returns {number} - The sum of num1 and num2.
+ */
 //Array containing objects with their own unique ids, nested arrays of genre ids that match the genres that the current book falls in,popularity of the book(a number), title of the book,image for the book cover,a description of the book,the number of pages in the book, the date that the book was published,and the auhtor id.
 export const books = [
   {

@@ -8,6 +8,16 @@ const listItemContainer = document.querySelector("[data-list-items]");
 const dataListButton = document.querySelector("[data-list-button]");
 let currentIndex = 0;
 //BOOKS_PER_PAGE=36;//batch size
+
+/**
+ * Display a batch of books on the page.
+ *
+ * This function fetches a batch of books to display based on the currentIndex variable
+ * and the number of books per page variable(BOOKS_PER_PAGE). It creates HTML elements for
+ * each book and appends them to the parent element in the HTML. It also updates the current index and
+ * the "Show more" button text, or disables it if there are no more books to display.
+ */
+
 const displayBooks = () => {
   let endIndex = currentIndex + BOOKS_PER_PAGE;
   let booksToShow = books.slice(currentIndex, endIndex);
@@ -43,36 +53,77 @@ const displayBooks = () => {
   }
 };
 
+//To display the initial batch:
 displayBooks();
 
 dataListButton.addEventListener("click", displayBooks);
 
 /********************CLICK EVENT ON LIST ITEMS-SHOWS OVERLAY************* */
+
+/**
+ * Overlay container element that contains everything that is displayed when a user clicks on a book element
+ */
 const overlayContainer = document.querySelector("[data-list-active]");
+/**
+ * Background image of the overlay that is displayed when a user clicks on a book element
+ */
 const overlayBlur = overlayContainer.querySelector("[data-list-blur]");
+
+/**
+ * Main image of the book cover that is shown on the displayed overlay when a user click on a book element
+ * */
 const overlayImage = overlayContainer.querySelector("[data-list-image]");
+
+/**
+ * title of the book displayed on the overlay when a user click on a book element
+ * */
 const overlayTitle = overlayContainer.querySelector("[data-list-title]");
+
+/**
+ * Author of the book displayed on the overlay when a user click on a book element
+ * */
 const overlaySubtitle = overlayContainer.querySelector("[data-list-subtitle]");
+
+/**
+ * Short description of the book displayed on the overlay when a user click on a book element
+ * */
 const overlayDescription = overlayContainer.querySelector(
   "[data-list-description]"
 );
+
+/**
+ * Button to click on to close the overlay
+ * */
 const overlayClose = overlayContainer.querySelector("[data-list-close]");
 
 listItemContainer.addEventListener("click", (event) => {
   const target = event.target;
+
+  // Check if the clicked element has the "preview" class
   if (target.classList.contains("preview")) {
+    // Loop through the 'books' array to find the book with matching id
     for (let i = 0; i < books.length; i++) {
       const { title, image, author, id, published } = books[i];
+
+      // Check if the book's id matches the id of the clicked element
       if (id === target.dataset.preview) {
+        // show overlay container
         overlayContainer.style.display = "block";
 
+        // Change overlay container's element's properties to match that of the target
         overlayBlur.src = image;
         overlayImage.src = image;
         overlayTitle.textContent = title;
+
+        // Format and display author name and publication year
         overlaySubtitle.textContent = `${authors[author]} (${new Date(
           published
         ).getFullYear()})`;
 
+        /**Holds the description of a book based on the id of the target
+         * -Found by looping through the books array to find which of its element's id properties match the id property of the target
+         * -When that element is found, the descriptionFromId variable is set to that element's description property
+         */
         let descriptionFromId = "";
 
         for (let j = 0; j < books.length; j++) {
@@ -95,13 +146,17 @@ overlayClose.addEventListener(
 /*******************SEARCH FORM DROPDOWNS************** */
 
 //Genres:
+/**select element containing all the genre options for a user to choose from */
 const searchGenres = document.querySelector("[data-search-genres]");
 
+/**Created option used for when a user would like to select all genres instead of a specific one */
 const allGenres = document.createElement("option");
 allGenres.value = "any";
+
 allGenres.textContent = "All Genres";
 searchGenres.appendChild(allGenres);
 
+/**Document Fragment to attach all created genre option elements to to create a dropdown menu */
 const genresFragment = document.createDocumentFragment();
 
 for (const id of Object.keys(genres)) {
@@ -116,13 +171,16 @@ searchGenres.appendChild(genresFragment);
 
 //Authors:
 
+/**select element containing all the author name options for a user to choose from */
 const searchAuthors = document.querySelector("[data-search-authors]");
 
+/**Created option used for when a user would like to select all authors instead of a specific one */
 const allAuthors = document.createElement("option");
 allAuthors.value = "any";
 allAuthors.textContent = "All Authors";
 searchAuthors.appendChild(allAuthors);
 
+/**Document Fragment to attach all created author option elements to to create a dropdown menu */
 const authorsFragment = document.createDocumentFragment();
 
 for (const id of Object.keys(authors)) {
@@ -139,10 +197,29 @@ searchAuthors.appendChild(authorsFragment);
 
 //SEARCH OVERLAY
 
+/**
+ * Search button to open up search overlay
+ */
 const searchButton = document.querySelector("[data-header-search]");
+
+/**
+ * Search overlay containing search form
+ */
 const searchOverlay = document.querySelector(["[data-search-overlay]"]);
+
+/**
+ * Button to close search overlay
+ */
 const closeSearch = document.querySelector("[data-search-cancel]");
+
+/**
+ * Button to submit search form
+ */
 const searchSubmit = searchOverlay.querySelector(".overlay__button_primary");
+
+/**
+ * Message that shows up when search form submission are too narrow
+ */
 const searchListMessage = document.querySelector("[data-list-message]");
 
 searchButton.addEventListener("click", (event) => {
