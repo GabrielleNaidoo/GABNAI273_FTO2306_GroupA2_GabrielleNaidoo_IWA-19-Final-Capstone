@@ -159,6 +159,12 @@ closeSearch.addEventListener(
 const formElement = document.querySelector("[data-search-form]");
 
 searchSubmit.addEventListener("click", (event) => {
+  if ((searchOverlay.style.display = "none")) {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+});
+
+searchSubmit.addEventListener("click", (event) => {
   event.preventDefault();
   const titleInput = document
     .querySelector("[data-search-title]")
@@ -166,7 +172,6 @@ searchSubmit.addEventListener("click", (event) => {
     .toLowerCase();
   const genreInput = document.querySelector("[data-search-genres]").value;
   const authorInput = document.querySelector("[data-search-authors]").value;
-  // listItemContainer.innerHTML = "";
   let result = [];
 
   for (let i = 0; i < books.length; i++) {
@@ -202,6 +207,7 @@ searchSubmit.addEventListener("click", (event) => {
     dataListButton.style.display = "none";
   }
   if (result.length > 0 && result.length !== books.length) {
+    dataListButton.style.display = "block";
     searchListMessage.style.display = "none"; //Gets rid of message form narrow search
     const resultItemFragment = document.createDocumentFragment(); //create fragment to append the result items from result array
     listItemContainer.innerHTML = "";
@@ -210,6 +216,8 @@ searchSubmit.addEventListener("click", (event) => {
     const displayBookResult = () => {
       let endIndex = currentIndex + BOOKS_PER_PAGE;
       let resultsToShow = result.slice(currentIndex, endIndex);
+      dataListButton.disabled = false;
+
       for (let i = 0; i < resultsToShow.length; i++) {
         const { title, image, author, id } = resultsToShow[i];
         const resultElement = document.createElement("div");
@@ -234,11 +242,12 @@ searchSubmit.addEventListener("click", (event) => {
 
       currentIndex = endIndex;
 
-      if (currentIndex >= resultsToShow.length) {
+      if (currentIndex >= result.length) {
         dataListButton.disabled = true;
+        dataListButton.textContent = `Show more (0)`;
       } else {
-        const resultsLeft = resultsToShow.length - currentIndex;
-        dataListButton.textContent = `Show more ${resultsLeft}`;
+        const resultsLeft = result.length - currentIndex;
+        dataListButton.textContent = `Show more (${resultsLeft})`;
       }
     };
     displayBookResult();
@@ -246,6 +255,8 @@ searchSubmit.addEventListener("click", (event) => {
     dataListButton.addEventListener("click", displayBookResult);
   }
   if (result.length === books.length) {
+    dataListButton.style.display = "block";
+    searchListMessage.style.display = "none";
     dataListButton.disabled = false;
   }
 });
