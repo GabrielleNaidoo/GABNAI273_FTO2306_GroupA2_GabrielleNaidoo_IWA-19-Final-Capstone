@@ -206,7 +206,7 @@ searchSubmit.addEventListener("click", (event) => {
     searchListMessage.style.display = "block";
     dataListButton.style.display = "none";
   }
-  if (result.length > 0 && result.length !== books.length) {
+  if (result.length > 0) {
     dataListButton.style.display = "block";
     searchListMessage.style.display = "none"; //Gets rid of message form narrow search
     const resultItemFragment = document.createDocumentFragment(); //create fragment to append the result items from result array
@@ -253,11 +253,6 @@ searchSubmit.addEventListener("click", (event) => {
     displayBookResult();
     dataListButton.removeEventListener("click", displayBooks);
     dataListButton.addEventListener("click", displayBookResult);
-  }
-  if (result.length === books.length) {
-    dataListButton.style.display = "block";
-    searchListMessage.style.display = "none";
-    dataListButton.disabled = false;
   }
 });
 
