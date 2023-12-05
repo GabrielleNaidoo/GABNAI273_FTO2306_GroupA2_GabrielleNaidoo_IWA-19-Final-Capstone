@@ -14,4 +14,4 @@ The user is able to switch between light and dark mode according to their prefer
 This project was built using JS variables,for and for...of loops, arrays, objects, and events.
 
 Technologies used: 
-VS Code, Git, and GitHub.
+JavaScript, VS Code, Git, and GitHub.
